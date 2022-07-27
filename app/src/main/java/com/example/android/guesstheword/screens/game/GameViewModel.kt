@@ -1,9 +1,9 @@
 package com.example.android.guesstheword.screens.game
 import android.os.CountDownTimer
 import android.text.format.DateUtils
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 
 class GameViewModel : ViewModel() {
@@ -15,6 +15,7 @@ class GameViewModel : ViewModel() {
         // This is the number of milliseconds in a second
         const val ONE_SECOND = 1000L
         // This is the total time of the game
+        //TODO change 10 seconds to 60
         const val COUNTDOWN_TIME = 10000L  //6000L
     }
 
@@ -37,26 +38,30 @@ class GameViewModel : ViewModel() {
     val eventGameFinish : LiveData<Boolean>
         get() = _eventGameFinish
 
-    private val _timerDisplay = MutableLiveData<Long>()
-    val timerDisplay : LiveData<Long>
-        get() = _timerDisplay
+    private val _currentTime = MutableLiveData<Long>()
+    val currentTime : LiveData<Long>
+        get() = _currentTime
+
+    val currentTimeString = Transformations.map(currentTime) { time ->
+        DateUtils.formatElapsedTime(time)
+    }
 
     init {
         resetList()
         nextWord()
         _score.value = 0
         _eventGameFinish.value = false
-        _timerDisplay.value = COUNTDOWN_TIME
+        _currentTime.value = COUNTDOWN_TIME
 
         // timer that triggers the end of the game when it finishes
         timer = object : CountDownTimer(COUNTDOWN_TIME, ONE_SECOND) {
 
             override fun onTick(millisUntilFinished: Long) {
-                _timerDisplay.value = (millisUntilFinished / ONE_SECOND)
+                _currentTime.value = (millisUntilFinished / ONE_SECOND)
             }
 
             override fun onFinish() {
-                _timerDisplay.value = DONE
+                _currentTime.value = DONE
                 _eventGameFinish.value = true
             }
         }
