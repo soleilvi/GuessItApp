@@ -67,7 +67,8 @@ class GameViewModel : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        Log.i("GameViewModel", "GameViewModel destroyed!")
+        // Log.i("GameViewModel", "GameViewModel destroyed!")
+        timer.cancel()
     }
 
     /**
